@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Context-Aware Voice Assistance — Solution Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --navy:   #050d1f;
+    --navy2:  #0a1830;
+    --navy3:  #0f2040;
+    --blue:   #1d6fff;
+    --blue2:  #3d8bff;
+    --cyan:   #00d4ff;
+    --teal:   #00b4c8;
+    --green:  #00e5a0;
+    --purple: #7b5ea7;
+    --white:  #f0f6ff;
+    --muted:  #8ea8cc;
+    --border: rgba(29,111,255,0.25);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: var(--navy); font-family: 'DM Sans', sans-serif; color: var(--white); }
+
+  /* ── DECK CONTAINER ── */
+  #deck { width: 100vw; height: 100vh; position: relative; }
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 60px 80px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    transform: translateX(40px);
+    background: var(--navy);
+    overflow: hidden;
+  }
+  .slide.active   { opacity: 1; pointer-events: all; transform: translateX(0); }
+  .slide.exit-left{ opacity: 0; transform: translateX(-40px); }
+
+  /* bg grid */
+  .slide::before {
+    content:'';
+    position:absolute; inset:0;
+    background-image: linear-gradient(rgba(29,111,255,0.04) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(29,111,255,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+  }
+
+  /* ── TYPOGRAPHY ── */
+  h1 { font-family:'Syne',sans-serif; font-weight:800; font-size:clamp(2rem,4.5vw,4rem); line-height:1.1; }
+  h2 { font-family:'Syne',sans-serif; font-weight:700; font-size:clamp(1.4rem,2.8vw,2.4rem); margin-bottom:0.5em; }
+  h3 { font-family:'Syne',sans-serif; font-weight:600; font-size:clamp(1rem,1.6vw,1.4rem); }
+  p, li { font-size: clamp(0.85rem,1.3vw,1.1rem); line-height:1.7; color: var(--muted); }
+
+  .accent { color: var(--cyan); }
+  .blue   { color: var(--blue2); }
+  .green  { color: var(--green); }
+
+  /* ── SLIDE LABELS ── */
+  .slide-label {
+    position:absolute; top:32px; left:80px;
+    font-size:0.7rem; letter-spacing:0.18em; text-transform:uppercase;
+    color: var(--blue2); opacity:0.7; font-family:'Syne',sans-serif;
+  }
+  .corner-accent {
+    position:absolute; top:0; right:0;
+    width:320px; height:320px;
+    background: radial-gradient(circle at top right, rgba(29,111,255,0.18), transparent 70%);
+    pointer-events:none;
+  }
+  .bottom-accent {
+    position:absolute; bottom:0; left:0;
+    width:500px; height:200px;
+    background: radial-gradient(ellipse at bottom left, rgba(0,212,255,0.08), transparent 70%);
+    pointer-events:none;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 60px; height: 3px;
+    background: linear-gradient(90deg, var(--blue), var(--cyan));
+    border-radius: 2px; margin: 16px 0 24px;
+  }
+
+  /* ── PILL TAGS ── */
+  .tag {
+    display:inline-block; padding:4px 14px; border-radius:50px;
+    font-size:0.72rem; font-weight:500; letter-spacing:0.06em;
+    background: rgba(29,111,255,0.15); border:1px solid var(--border);
+    color: var(--blue2);
+  }
+
+  /* ─────────────────────────────── */
+  /*  SLIDE 1 — TITLE               */
+  /* ─────────────────────────────── */
+  #s1 { justify-content: center; align-items: flex-start; }
+  #s1 .eyebrow {
+    font-size:0.75rem; letter-spacing:0.2em; text-transform:uppercase;
+    color:var(--cyan); margin-bottom:20px; font-family:'Syne',sans-serif;
+  }
+  #s1 h1 { max-width:700px; }
+  #s1 .sub { font-size:clamp(1rem,1.8vw,1.4rem); color:var(--muted); margin-top:16px; max-width:580px; }
+  #s1 .author-block { margin-top:48px; display:flex; align-items:center; gap:16px; }
+  #s1 .avatar {
+    width:48px; height:48px; border-radius:50%;
+    background: linear-gradient(135deg,var(--blue),var(--cyan));
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Syne',sans-serif; font-weight:700; font-size:1.1rem; color:#fff;
+  }
+  #s1 .author-info small { color:var(--muted); font-size:0.78rem; display:block; }
+  #s1 .hero-graphic {
+    position:absolute; right:-40px; top:50%; transform:translateY(-50%);
+    width:520px; height:520px; opacity:0.15;
+  }
+
+  /* ─────────────────────────────── */
+  /*  SLIDE 2 — AGENDA              */
+  /* ─────────────────────────────── */
+  #s2 .agenda-grid {
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:14px; width:100%; max-width:880px; margin-top:8px;
+  }
+  .agenda-item {
+    display:flex; align-items:center; gap:14px;
+    background:rgba(255,255,255,0.03); border:1px solid var(--border);
+    border-radius:10px; padding:14px 18px;
+    transition: background 0.2s;
+  }
+  .agenda-item:hover { background:rgba(29,111,255,0.08); }
+  .agenda-num {
+    font-family:'Syne',sans-serif; font-weight:700; font-size:1.4rem;
+    color:var(--blue2); min-width:32px;
+  }
+  .agenda-item p { color:var(--white); font-size:0.92rem; margin:0; }
+  .agenda-item small { color:var(--muted); font-size:0.75rem; }
+
+  /* ─────────────────────────────── */
+  /*  SLIDE 3 — PROBLEM             */
+  /* ─────────────────────────────── */
+  .problem-cards { display:flex; gap:18px; margin-top:8px; }
+  .prob-card {
+    flex:1; background:rgba(255,255,255,0.03); border:1px solid rgba(255,80,80,0.2);
+    border-radius:12px; padding:24px;
+  }
+  .prob-icon { font-size:1.8rem; margin-bottom:10px; }
+  .prob-card h3 { color:var(--white); margin-bottom:8px; }
+  .prob-card p { font-size:0.88rem; }
+  .stat-strip {
+    display:flex; gap:24px; margin-top:28px;
+    background:rgba(255,255,255,0.03); border:1px solid var(--border);
+    border-radius:12px; padding:20px 28px;
+  }
+  .stat { text-align:center; flex:1; }
+  .stat .num { font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; color:var(--cyan); }
+  .stat small { color:var(--muted); font-size:0.78rem; }
+
+  /* ─────────────────────────────── */
+  /*  SLIDE 4 — SOLUTION OVERVIEW   */
+  /* ─────────────────────────────── */
+  .pillars { display:flex; gap:16px; margin-top:16px; }
+  .pillar {
+    flex:1; border-radius:12px; padding:24px;
+    background:linear-gradient(145deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01));
+    border:1px solid var(--border);
+    text-align:center;
+  }
+  .pillar .icon { font-size:2rem; margin-bottom:12px; }
+  .pillar h3 { font-size:0.95rem; color:var(--white); margin-bottom:8px; }
+  .pillar p { font-size:0.82rem; }
+  .solution-desc {
+    max-width:760px; text-align:center; font-size:1.05rem; color:var(--white);
+    line-height:1.75; margin-bottom:28px;
+  }
+
+  /* ─────────────────────────────── */
+  /*  SLIDE 5 — ARCHITECTURE        */
+  /* ─────────────────────────────── */
+  #s5 { padding: 50px 60px; }
+  .arch-wrap { width:100%; max-width:1100px; }
+  .arch-row { display:flex; align-items:center; justify-content:center; gap:0; margin:0 auto; }
+  .arch-box {
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    border-radius:10px; padding:10px 14px; text-align:center;
+    border:1px solid var(--border); min-width:96px;
+    font-family:'Syne',sans-serif; font-size:0.72rem; font-weight:600;
+    line-height:1.3; letter-spacing:0.03em;
+  }
+  .arch-box .ico { font-size:1.3rem; margin-bottom:4px; }
+  .arch-box.user    { background:rgba(0,212,255,0.1);  border-color:var(--cyan); color:var(--cyan); }
+  .arch-box.input   { background:rgba(29,111,255,0.12); border-color:var(--blue2); color:var(--blue2); }
+  .arch-box.core    { background:rgba(123,94,167,0.15); border-color:var(--purple); color:#c8aeff; min-width:110px; }
+  .arch-box.ctx     { background:rgba(0,229,160,0.1);  border-color:var(--green); color:var(--green); }
+  .arch-box.out     { background:rgba(0,180,200,0.1);  border-color:var(--teal); color:var(--teal); }
+  .arch-box.gw      { background:rgba(29,111,255,0.08); border-color:var(--blue); color:var(--blue2); }
+  .arch-arrow { color:var(--muted); font-size:1.2rem; padding:0 6px; flex-shrink:0; }
+  .arch-arrow.down { transform:rotate(90deg); }
+  .arch-subtitle { font-size:0.68rem; color:var(--muted); margin-top:4px; font-family:'DM Sans',sans-serif; font-weight:300; }
+
+  .arch-col-group { display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .arch-context-lane {
+    display:flex; flex-direction:column; align-items:center; margin-top:18px;
+    gap:6px;
+  }
+  .arch-context-row { display:flex; align-items:center; gap:6px; }
+  .arch-legend { display:flex; gap:16px; margin-top:16px; justify-content:center; flex-wrap:wrap; }
+  .leg { display:flex; align-items:center; gap:6px; font-size:0.72rem; color:var(--muted); }
+  .leg-dot { width:10px; height:10px; border-radius:3px; }
+  .arch-label {
+    font-size:0.65rem; color:var(--muted); text-transform:uppercase;
+    letter-spacing:0.12em; margin-bottom:6px; font-family:'Syne',sans-serif;
+  }
+  .arch-section {
+    border:1px dashed rgba(255,255,255,0.1); border-radius:12px;
+    padding:12px 16px; display:flex; flex-direction:column; align-items:center; gap:8px;
+  }
+
+  /* ─────────────────────────────── */
+  /*  SLIDE 6 — CORE COMPONENTS     */
+  /* ─────────────────────────────── */
+  .comp-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; width:100%; max-width:920px; }
+  .comp-card {
+    background:rgba(255,255,255,0.03); border:1px solid var(--border);
+    border-radius:12px; padding:20px;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .comp-card:hover { transform:translateY(-3px); border-color:var(--blue2); }
+  .comp-icon { font-size:1.6rem; margin-bottom:10px; }
+  .comp-card h3 { font-size:0.92rem; color:var(--white); margin-bottom:6px; }
+  .comp-card p  { font-size:0.80rem; }
+
+  /* ─────────────────────────────── */
+  /*  SLIDE 7 — TECH STACK          */
+  /* ─────────────────────────────── */
+  .stack-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; width:100%; max-width:960px; }
+  .stack-card {
+    background:rgba(255,255,255,0.03); border:1px solid var(--border);
+    border-radius:12px; padding:18px 16px; text-align:center;
+  }
+  .stack-layer { font-size:0.68rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--muted); margin-bottom:6px; font-family:'Syne',sans-serif; }
+  .stack-tech { font-family:'Syne',sans-serif; font-weight:700; font-size:0.95rem; color:var(--white); margin-bottom:4px; }
+  .stack-desc { font-size:0.75rem; color:var(--muted); }
+  .stack-icon { font-size:1.5rem; margin-bottom:8px; }
+
+  /* ─────────────────────────────── */
+  /*  SLIDE 8 — CONTEXT MGMT        */
+  /* ─────────────────────────────── */
+  .ctx-tiers { display:flex; gap:18px; margin-top:8px; }
+  .ctx-tier {
+    flex:1; border-radius:12px; padding:22px;
+    background:rgba(255,255,255,0.03); border:1px solid var(--border);
+    position:relative; overflow:hidden;
+  }
+  .ctx-tier::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  }
+  .ctx-tier.st::before { background:linear-gradient(90deg,var(--blue),var(--cyan)); }
+  .ctx-tier.lt::before { background:linear-gradient(90deg,var(--purple),var(--blue)); }
+  .ctx-tier.vs::before { background:linear-gradient(90deg,var(--green),var(--teal)); }
+  .ctx-tier h3 { color:var(--white); margin-bottom:10px; }
+  .ctx-tier ul { list-style:none; }
+  .ctx-tier ul li { font-size:0.85rem; padding:5px 0; color:var(--muted); display:flex; align-items:center; gap:8px; }
+  .ctx-tier ul li::before { content:'›'; color:var(--blue2); font-weight:700; }
+  .ctx-flow { display:flex; align-items:center; gap:10px; margin-top:20px;
+    background:rgba(0,212,255,0.05); border:1px solid rgba(0,212,255,0.15);
+    border-radius:10px; padding:12px 18px;
+  }
+  .ctx-flow span { font-size:0.83rem; color:var(--white); }
+  .ctx-flow .arr { color:var(--cyan); font-weight:700; }
+
+  /* ─────────────────────────────── */
+  /*  SLIDE 9 — DATA FLOW           */
+  /* ─────────────────────────────── */
+  .flow-steps { display:flex; flex-direction:column; gap:10px; width:100%; max-width:800px; }
+  .flow-step {
+    display:flex; align-items:center; gap:18px;
+    background:rgba(255,255,255,0.03); border:1px solid var(--border);
+    border-radius:10px; padding:14px 20px;
+    transition: border-color 0.2s;
+  }
+  .flow-step:hover { border-color:var(--blue2); }
+  .step-num {
+    width:32px; height:32px; border-radius:50%; flex-shrink:0;
+    background:linear-gradient(135deg,var(--blue),var(--cyan));
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Syne',sans-serif; font-weight:700; font-size:0.85rem; color:#fff;
+  }
+  .flow-step .label { font-size:0.92rem; color:var(--white); font-weight:500; flex:1; }
+  .flow-step .sublabel { font-size:0.78rem; color:var(--muted); }
+  .flow-step .tag-mini {
+    font-size:0.68rem; padding:3px 10px; border-radius:50px;
+    background:rgba(29,111,255,0.15); border:1px solid var(--border);
+    color:var(--blue2); white-space:nowrap;
+  }
+
+  /* ─────────────────────────────── */
+  /*  SLIDE 10 — SECURITY           */
+  /* ─────────────────────────────── */
+  .sec-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; width:100%; max-width:920px; }
+  .sec-card {
+    background:rgba(255,255,255,0.03); border:1px solid var(--border);
+    border-radius:12px; padding:20px;
+  }
+  .sec-card .ico { font-size:1.5rem; margin-bottom:10px; }
+  .sec-card h3   { font-size:0.9rem; color:var(--white); margin-bottom:6px; }
+  .sec-card p    { font-size:0.78rem; }
+  .compliance-strip {
+    display:flex; gap:10px; margin-top:22px; flex-wrap:wrap; justify-content:center;
+  }
+  .comp-badge {
+    padding:6px 16px; border-radius:50px; font-size:0.75rem; font-weight:600;
+    font-family:'Syne',sans-serif;
+    background:rgba(0,229,160,0.1); border:1px solid rgba(0,229,160,0.3);
+    color:var(--green);
+  }
+
+  /* ─────────────────────────────── */
+  /*  SLIDE 11 — ROADMAP            */
+  /* ─────────────────────────────── */
+  .roadmap { display:flex; gap:0; width:100%; max-width:1000px; position:relative; margin-top:8px; }
+  .roadmap::before {
+    content:''; position:absolute; top:38px; left:0; right:0; height:2px;
+    background:linear-gradient(90deg,var(--blue),var(--cyan));
+  }
+  .phase { flex:1; display:flex; flex-direction:column; align-items:center; }
+  .phase-dot {
+    width:18px; height:18px; border-radius:50%; z-index:1; margin-bottom:16px;
+    background:linear-gradient(135deg,var(--blue),var(--cyan));
+    box-shadow:0 0 12px rgba(0,212,255,0.5);
+  }
+  .phase-card {
+    background:rgba(255,255,255,0.03); border:1px solid var(--border);
+    border-radius:10px; padding:16px 12px; width:calc(100% - 16px);
+    text-align:center;
+  }
+  .phase-num { font-size:0.65rem; text-transform:uppercase; letter-spacing:0.15em; color:var(--cyan); font-family:'Syne',sans-serif; }
+  .phase-title { font-family:'Syne',sans-serif; font-weight:700; font-size:0.92rem; color:var(--white); margin:4px 0; }
+  .phase-time { font-size:0.72rem; color:var(--blue2); margin-bottom:10px; }
+  .phase-items { list-style:none; text-align:left; }
+  .phase-items li { font-size:0.76rem; color:var(--muted); padding:3px 0; display:flex; align-items:flex-start; gap:6px; }
+  .phase-items li::before { content:'·'; color:var(--cyan); font-weight:900; }
+
+  /* ─────────────────────────────── */
+  /*  SLIDE 12 — ROI / BENEFITS     */
+  /* ─────────────────────────────── */
+  .roi-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; width:100%; max-width:840px; }
+  .roi-card {
+    background:rgba(255,255,255,0.03); border:1px solid var(--border);
+    border-radius:12px; padding:22px; display:flex; gap:16px; align-items:flex-start;
+  }
+  .roi-icon { font-size:1.8rem; }
+  .roi-card h3 { font-size:0.92rem; color:var(--white); margin-bottom:5px; }
+  .roi-card p  { font-size:0.80rem; }
+  .roi-metric { font-family:'Syne',sans-serif; font-weight:800; font-size:1.5rem; color:var(--green); margin-top:4px; }
+
+  /* ─────────────────────────────── */
+  /*  SLIDE 13 — NEXT STEPS         */
+  /* ─────────────────────────────── */
+  .next-steps { display:flex; flex-direction:column; gap:14px; width:100%; max-width:760px; }
+  .next-step {
+    display:flex; align-items:center; gap:20px;
+    background:rgba(255,255,255,0.03); border:1px solid var(--border);
+    border-radius:12px; padding:18px 24px;
+  }
+  .step-circle {
+    width:44px; height:44px; border-radius:50%; flex-shrink:0;
+    border:2px solid var(--blue2);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; color:var(--blue2);
+  }
+  .next-step .body h3  { font-size:0.95rem; color:var(--white); margin-bottom:3px; }
+  .next-step .body p   { font-size:0.82rem; }
+
+  /* ─────────────────────────────── */
+  /*  SLIDE 14 — THANK YOU          */
+  /* ─────────────────────────────── */
+  #s14 { text-align:center; }
+  #s14 h1 { font-size:clamp(2.5rem,5vw,4.5rem); }
+  #s14 .qa { font-size:1.1rem; color:var(--muted); margin-top:12px; }
+  #s14 .contact-strip { display:flex; gap:16px; margin-top:40px; justify-content:center; flex-wrap:wrap; }
+  #s14 .contact-item {
+    background:rgba(255,255,255,0.04); border:1px solid var(--border);
+    border-radius:50px; padding:8px 20px; font-size:0.82rem; color:var(--muted);
+  }
+
+  /* ── NAVIGATION ── */
+  #nav {
+    position:fixed; bottom:28px; left:50%; transform:translateX(-50%);
+    display:flex; align-items:center; gap:12px; z-index:100;
+    background:rgba(5,13,31,0.85); border:1px solid var(--border);
+    border-radius:50px; padding:8px 16px;
+    backdrop-filter:blur(12px);
+  }
+  .nav-btn {
+    width:36px; height:36px; border-radius:50%; border:1px solid var(--border);
+    background:rgba(29,111,255,0.1); color:var(--white); cursor:pointer;
+    font-size:1rem; display:flex; align-items:center; justify-content:center;
+    transition:background 0.2s;
+  }
+  .nav-btn:hover { background:rgba(29,111,255,0.3); }
+  #counter { font-size:0.78rem; color:var(--muted); min-width:48px; text-align:center; font-family:'Syne',sans-serif; }
+
+  #progress {
+    position:fixed; top:0; left:0; height:2px;
+    background:linear-gradient(90deg,var(--blue),var(--cyan));
+    transition:width 0.4s ease; z-index:200;
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div id="deck">
+
+  <!-- ══════════════════════════════ SLIDE 1 ══ -->
+  <div class="slide active" id="s1">
+    <div class="corner-accent"></div>
+    <div class="bottom-accent"></div>
+    <div class="eyebrow">Solution Architect Presentation · 2025</div>
+    <h1>Context-Aware<br/><span class="accent">Voice Assistance</span></h1>
+    <div class="divider"></div>
+    <p class="sub">An AI-powered conversational voice platform designed for intelligent, context-retaining interactions at enterprise scale.</p>
+    <div class="author-block">
+      <div class="avatar">SA</div>
+      <div class="author-info">
+        <strong style="font-size:0.92rem">Solution Architect</strong>
+        <small>Architecture Review · Technical Leadership Briefing</small>
+      </div>
+    </div>
+    <!-- decorative SVG -->
+    <svg class="hero-graphic" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="200" cy="200" r="160" stroke="white" stroke-width="1"/>
+      <circle cx="200" cy="200" r="110" stroke="white" stroke-width="1"/>
+      <circle cx="200" cy="200" r="60"  stroke="white" stroke-width="1"/>
+      <circle cx="200" cy="200" r="12"  fill="white"/>
+      <line x1="200" y1="40"  x2="200" y2="80"  stroke="white" stroke-width="1.5"/>
+      <line x1="200" y1="320" x2="200" y2="360" stroke="white" stroke-width="1.5"/>
+      <line x1="40"  y1="200" x2="80"  y2="200" stroke="white" stroke-width="1.5"/>
+      <line x1="320" y1="200" x2="360" y2="200" stroke="white" stroke-width="1.5"/>
+      <path d="M200 140 L220 170 L200 160 L180 170 Z" fill="white"/>
+    </svg>
+  </div>
+
+  <!-- ══════════════════════════════ SLIDE 2 ══ -->
+  <div class="slide" id="s2">
+    <div class="corner-accent"></div>
+    <div class="slide-label">Agenda</div>
+    <h2>What We'll Cover</h2>
+    <div class="divider"></div>
+    <div class="agenda-grid">
+      <div class="agenda-item"><div class="agenda-num">01</div><div><p>Problem Statement</p><small>Why existing solutions fall short</small></div></div>
+      <div class="agenda-item"><div class="agenda-num">02</div><div><p>Solution Overview</p><small>Vision and value proposition</small></div></div>
+      <div class="agenda-item"><div class="agenda-num">03</div><div><p>High-Level Architecture</p><small>System topology and components</small></div></div>
+      <div class="agenda-item"><div class="agenda-num">04</div><div><p>Core Components</p><small>Deep-dive into building blocks</small></div></div>
+      <div class="agenda-item"><div class="agenda-num">05</div><div><p>Technology Stack</p><small>Tools, frameworks, and platforms</small></div></div>
+      <div class="agenda-item"><div class="agenda-num">06</div><div><p>Context Management</p><small>Session, profile, and semantic retrieval</small></div></div>
+      <div class="agenda-item"><div class="agenda-num">07</div><div><p>Security &amp; Privacy</p><small>Compliance and data protection</small></div></div>
+      <div class="agenda-item"><div class="agenda-num">08</div><div><p>Roadmap &amp; ROI</p><small>Phases, milestones, and business value</small></div></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════ SLIDE 3 ══ -->
+  <div class="slide" id="s3">
+    <div class="corner-accent"></div>
+    <div class="slide-label">Problem Statement</div>
+    <h2>The <span class="accent">Broken</span> Voice Experience</h2>
+    <div class="divider"></div>
+    <div class="problem-cards">
+      <div class="prob-card">
+        <div class="prob-icon">🔁</div>
+        <h3>No Memory</h3>
+        <p>Users must repeat context with every new interaction. Assistants treat each query as isolated, ignoring prior conversation history.</p>
+      </div>
+      <div class="prob-card">
+        <div class="prob-icon">🧩</div>
+        <h3>Intent Blindness</h3>
+        <p>Traditional IVR and basic voice bots cannot infer intent across multi-turn conversations, forcing rigid dialogue flows.</p>
+      </div>
+      <div class="prob-card">
+        <div class="prob-icon">📉</div>
+        <h3>Poor Personalization</h3>
+        <p>Generic responses regardless of who is speaking. No adaptation to user preferences, history, or situational context.</p>
+      </div>
+      <div class="prob-card">
+        <div class="prob-icon">⚡</div>
+        <h3>High Abandonment</h3>
+        <p>Frustrating repetition and misunderstandings cause users to abandon voice channels entirely, driving up support costs.</p>
+      </div>
+    </div>
+    <div class="stat-strip">
+      <div class="stat"><div class="num">67%</div><small>of users frustrated by repeating info</small></div>
+      <div class="stat"><div class="num">40%</div><small>voice interaction abandonment rate</small></div>
+      <div class="stat"><div class="num">3×</div><small>higher cost vs self-service</small></div>
+      <div class="stat"><div class="num">$1.6T</div><small>annual productivity lost globally</small></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════ SLIDE 4 ══ -->
+  <div class="slide" id="s4">
+    <div class="corner-accent"></div>
+    <div class="slide-label">Solution Overview</div>
+    <h2>Intelligent Voice — <span class="accent">By Design</span></h2>
+    <div class="divider"></div>
+    <p class="solution-desc">
+      A context-aware voice assistance platform that combines real-time speech processing,
+      large language model reasoning, and persistent context management to deliver
+      natural, personalized, and uninterrupted conversational experiences.
+    </p>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="icon">🧠</div>
+        <h3>Context Retention</h3>
+        <p>Maintains short-term session context and long-term user profiles across interactions.</p>
+      </div>
+      <div class="pillar">
+        <div class="icon">🎙️</div>
+        <h3>Natural Voice I/O</h3>
+        <p>High-accuracy STT + expressive TTS with low-latency end-to-end processing.</p>
+      </div>
+      <div class="pillar">
+        <div class="icon">🤖</div>
+        <h3>LLM-Powered NLU</h3>
+        <p>GPT-4 / Claude backbone for intent resolution, semantic understanding, and response generation.</p>
+      </div>
+      <div class="pillar">
+        <div class="icon">🔒</div>
+        <h3>Enterprise-Grade</h3>
+        <p>GDPR-compliant, encrypted at rest and in transit, with full audit logging and RBAC.</p>
+      </div>
+      <div class="pillar">
+        <div class="icon">📈</div>
+        <h3>Cloud-Native Scale</h3>
+        <p>Containerised microservices on AWS/Azure — auto-scaling to millions of concurrent sessions.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════ SLIDE 5 ══ -->
+  <div class="slide" id="s5">
+    <div class="slide-label">High-Level Architecture</div>
+    <h2 style="text-align:center;margin-bottom:6px;">System <span class="accent">Architecture</span></h2>
+    <div class="divider" style="margin:8px auto 18px;"></div>
+    <div class="arch-wrap">
+      <!-- Main pipeline row -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:nowrap;">
+        <div class="arch-box user"><div class="ico">👤</div>User</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box input"><div class="ico">🎙️</div>Voice<br/>Capture</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box input"><div class="ico">🔊</div>STT<br/>Engine</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box gw"><div class="ico">🌐</div>API<br/>Gateway</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box core"><div class="ico">🧠</div>NLU / LLM<br/>Processor</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box ctx"><div class="ico">💾</div>Context<br/>Manager</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box core"><div class="ico">✍️</div>Response<br/>Generator</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box out"><div class="ico">🔈</div>TTS<br/>Engine</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box user"><div class="ico">🔉</div>Audio<br/>Output</div>
+      </div>
+      <!-- Context store row -->
+      <div style="display:flex;justify-content:center;margin-top:14px;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+          <div style="font-size:0.65rem;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;font-family:'Syne',sans-serif;">Context Store (bidirectional)</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="arch-box ctx" style="min-width:90px;"><div class="ico">⚡</div>Redis<br/><span class="arch-subtitle">Session Cache</span></div>
+            <div class="arch-arrow" style="font-size:1rem;">⟷</div>
+            <div class="arch-box ctx" style="min-width:90px;"><div class="ico">🗄️</div>Vector DB<br/><span class="arch-subtitle">Long-term Memory</span></div>
+            <div class="arch-arrow" style="font-size:1rem;">⟷</div>
+            <div class="arch-box ctx" style="min-width:90px;"><div class="ico">👤</div>User<br/>Profile DB</div>
+          </div>
+        </div>
+      </div>
+      <!-- Legend -->
+      <div class="arch-legend">
+        <div class="leg"><div class="leg-dot" style="background:var(--cyan)"></div>User Interface</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--blue2)"></div>Voice Processing</div>
+        <div class="leg"><div class="leg-dot" style="background:#c8aeff)"></div><span style="color:var(--muted)">AI Core</span></div>
+        <div class="leg"><div class="leg-dot" style="background:var(--green)"></div>Context &amp; Storage</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--teal)"></div>Audio Output</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════ SLIDE 6 ══ -->
+  <div class="slide" id="s6">
+    <div class="corner-accent"></div>
+    <div class="slide-label">Core Components</div>
+    <h2>Building <span class="accent">Blocks</span></h2>
+    <div class="divider"></div>
+    <div class="comp-grid">
+      <div class="comp-card">
+        <div class="comp-icon">🎙️</div>
+        <h3>Voice Capture Module</h3>
+        <p>Browser-based WebRTC microphone capture with noise suppression, VAD (Voice Activity Detection), and real-time audio streaming to the STT pipeline.</p>
+      </div>
+      <div class="comp-card">
+        <div class="comp-icon">📝</div>
+        <h3>STT Engine</h3>
+        <p>OpenAI Whisper (or Azure Cognitive Services) for high-accuracy transcription across accents and languages. Streaming mode for low latency.</p>
+      </div>
+      <div class="comp-card">
+        <div class="comp-icon">🧠</div>
+        <h3>NLU / LLM Processor</h3>
+        <p>LLM (GPT-4 / Claude) for intent classification, entity extraction, and semantic reasoning. Prompts are enriched with retrieved context before inference.</p>
+      </div>
+      <div class="comp-card">
+        <div class="comp-icon">💾</div>
+        <h3>Context Manager</h3>
+        <p>Maintains session state in Redis, retrieves relevant history from Vector DB via semantic search, and injects context into the LLM prompt chain.</p>
+      </div>
+      <div class="comp-card">
+        <div class="comp-icon">✍️</div>
+        <h3>Response Generator</h3>
+        <p>Constructs natural-language responses using LLM output, applies templating, tone adaptation, and formats output for TTS consumption.</p>
+      </div>
+      <div class="comp-card">
+        <div class="comp-icon">🔈</div>
+        <h3>TTS Engine</h3>
+        <p>ElevenLabs or Azure Neural TTS for expressive, natural-sounding speech output. Supports voice persona selection and emotional tonality.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════ SLIDE 7 ══ -->
+  <div class="slide" id="s7">
+    <div class="corner-accent"></div>
+    <div class="slide-label">Technology Stack</div>
+    <h2>Technology <span class="accent">Stack</span></h2>
+    <div class="divider"></div>
+    <div class="stack-grid">
+      <div class="stack-card">
+        <div class="stack-icon">⚛️</div>
+        <div class="stack-layer">Frontend</div>
+        <div class="stack-tech">React + WebRTC</div>
+        <div class="stack-desc">Real-time audio capture, streaming UI, responsive design</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">🎙️</div>
+        <div class="stack-layer">Speech-to-Text</div>
+        <div class="stack-tech">OpenAI Whisper</div>
+        <div class="stack-desc">High-accuracy multilingual transcription with streaming support</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">🤖</div>
+        <div class="stack-layer">LLM / NLU</div>
+        <div class="stack-tech">GPT-4 / Claude</div>
+        <div class="stack-desc">Intent reasoning, context injection, response synthesis</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">⚡</div>
+        <div class="stack-layer">Session Cache</div>
+        <div class="stack-tech">Redis</div>
+        <div class="stack-desc">Low-latency context retrieval, session state management</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">🗄️</div>
+        <div class="stack-layer">Vector Database</div>
+        <div class="stack-tech">Pinecone / Weaviate</div>
+        <div class="stack-desc">Semantic search over long-term memory and user history</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">🐍</div>
+        <div class="stack-layer">Backend API</div>
+        <div class="stack-tech">FastAPI (Python)</div>
+        <div class="stack-desc">Async REST + WebSocket endpoints, orchestration layer</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">🔈</div>
+        <div class="stack-layer">Text-to-Speech</div>
+        <div class="stack-tech">ElevenLabs / Azure TTS</div>
+        <div class="stack-desc">Neural voice synthesis, persona selection, expressive output</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">☁️</div>
+        <div class="stack-layer">Infrastructure</div>
+        <div class="stack-tech">AWS / Azure (K8s)</div>
+        <div class="stack-desc">Containerised microservices, auto-scaling, multi-region HA</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════ SLIDE 8 ══ -->
+  <div class="slide" id="s8">
+    <div class="corner-accent"></div>
+    <div class="slide-label">Context Management</div>
+    <h2>Context <span class="accent">Intelligence</span> Layer</h2>
+    <div class="divider"></div>
+    <div class="ctx-tiers">
+      <div class="ctx-tier st">
+        <div style="font-size:1.4rem;margin-bottom:10px;">⚡</div>
+        <h3>Short-Term Context</h3>
+        <p style="font-size:0.8rem;margin-bottom:10px;">Active session memory — fast access, ephemeral</p>
+        <ul>
+          <li>Current conversation turns</li>
+          <li>In-session user intent chain</li>
+          <li>Temporary entities (names, dates)</li>
+          <li>Stored in Redis (TTL: session duration)</li>
+        </ul>
+      </div>
+      <div class="ctx-tier lt">
+        <div style="font-size:1.4rem;margin-bottom:10px;">🗄️</div>
+        <h3>Long-Term Memory</h3>
+        <p style="font-size:0.8rem;margin-bottom:10px;">Persistent user profile — durable, enriched over time</p>
+        <ul>
+          <li>Historical interaction summaries</li>
+          <li>User preferences &amp; behaviour patterns</li>
+          <li>Domain-specific knowledge anchors</li>
+          <li>Stored in SQL DB + Vector DB</li>
+        </ul>
+      </div>
+      <div class="ctx-tier vs">
+        <div style="font-size:1.4rem;margin-bottom:10px;">🔍</div>
+        <h3>Semantic Retrieval</h3>
+        <p style="font-size:0.8rem;margin-bottom:10px;">Vector search over memory — relevance-ranked</p>
+        <ul>
+          <li>Embedding-based similarity search</li>
+          <li>Top-K context injection into prompt</li>
+          <li>RAG (Retrieval-Augmented Generation)</li>
+          <li>Pinecone / Weaviate as vector store</li>
+        </ul>
+      </div>
+    </div>
+    <div class="ctx-flow">
+      <span>User speaks</span><span class="arr">→</span>
+      <span>Query embedded</span><span class="arr">→</span>
+      <span>Vector search (top-5 memories)</span><span class="arr">→</span>
+      <span>Injected into LLM prompt</span><span class="arr">→</span>
+      <span>Contextual response generated</span><span class="arr">→</span>
+      <span>New memory stored</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════ SLIDE 9 ══ -->
+  <div class="slide" id="s9">
+    <div class="corner-accent"></div>
+    <div class="slide-label">Data Flow</div>
+    <h2>End-to-End <span class="accent">Data Flow</span></h2>
+    <div class="divider"></div>
+    <div class="flow-steps">
+      <div class="flow-step"><div class="step-num">1</div><div class="label">User Speaks</div><div class="sublabel">Microphone opens, audio stream begins via WebRTC</div><div class="tag-mini">Frontend</div></div>
+      <div class="flow-step"><div class="step-num">2</div><div class="label">Audio Captured &amp; Streamed</div><div class="sublabel">Voice Activity Detection triggers, raw audio sent to backend</div><div class="tag-mini">WebRTC</div></div>
+      <div class="flow-step"><div class="step-num">3</div><div class="label">Transcribed to Text</div><div class="sublabel">Whisper STT converts audio to text transcript in real time</div><div class="tag-mini">STT Engine</div></div>
+      <div class="flow-step"><div class="step-num">4</div><div class="label">Context Retrieved</div><div class="sublabel">Redis returns session state; Vector DB returns top-K relevant memories</div><div class="tag-mini">Context Manager</div></div>
+      <div class="flow-step"><div class="step-num">5</div><div class="label">LLM Generates Response</div><div class="sublabel">Enriched prompt (transcript + context) sent to GPT-4 / Claude for inference</div><div class="tag-mini">NLU Core</div></div>
+      <div class="flow-step"><div class="step-num">6</div><div class="label">Context Updated &amp; Stored</div><div class="sublabel">New turn appended to session; embeddings written to Vector DB</div><div class="tag-mini">Context Store</div></div>
+      <div class="flow-step"><div class="step-num">7</div><div class="label">TTS Converts Response</div><div class="sublabel">Text response synthesised into natural speech audio via ElevenLabs / Azure</div><div class="tag-mini">TTS Engine</div></div>
+      <div class="flow-step"><div class="step-num">8</div><div class="label">Audio Played Back to User</div><div class="sublabel">Streamed audio delivered to browser and rendered through speaker</div><div class="tag-mini">Frontend</div></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════ SLIDE 10 ══ -->
+  <div class="slide" id="s10">
+    <div class="corner-accent"></div>
+    <div class="slide-label">Security &amp; Privacy</div>
+    <h2>Security <span class="accent">by Design</span></h2>
+    <div class="divider"></div>
+    <div class="sec-grid">
+      <div class="sec-card">
+        <div class="ico">🔐</div>
+        <h3>End-to-End Encryption</h3>
+        <p>All audio streams and API payloads encrypted with TLS 1.3. Data at rest encrypted using AES-256.</p>
+      </div>
+      <div class="sec-card">
+        <div class="ico">🎭</div>
+        <h3>PII Masking</h3>
+        <p>Named entity recognition detects and masks PII (names, account numbers, emails) before storage or LLM submission.</p>
+      </div>
+      <div class="sec-card">
+        <div class="ico">🛡️</div>
+        <h3>Role-Based Access</h3>
+        <p>RBAC via OAuth 2.0 / OIDC. Users access only their own context; admins have audit-only visibility.</p>
+      </div>
+      <div class="sec-card">
+        <div class="ico">📋</div>
+        <h3>Audit Logging</h3>
+        <p>Immutable audit trail for all interactions, context reads/writes, and admin actions. Stored in append-only log store.</p>
+      </div>
+      <div class="sec-card">
+        <div class="ico">🗑️</div>
+        <h3>Data Retention Policies</h3>
+        <p>Configurable TTL on session and long-term data. Right-to-erasure (GDPR Art. 17) fully automated.</p>
+      </div>
+      <div class="sec-card">
+        <div class="ico">🔍</div>
+        <h3>Threat Monitoring</h3>
+        <p>Real-time anomaly detection, prompt injection guardrails, and rate limiting on all voice/API endpoints.</p>
+      </div>
+    </div>
+    <div class="compliance-strip">
+      <div class="comp-badge">GDPR Compliant</div>
+      <div class="comp-badge">ISO 27001</div>
+      <div class="comp-badge">SOC 2 Type II</div>
+      <div class="comp-badge">OWASP Top 10</div>
+      <div class="comp-badge">CCPA Ready</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════ SLIDE 11 ══ -->
+  <div class="slide" id="s11">
+    <div class="corner-accent"></div>
+    <div class="slide-label">Implementation Roadmap</div>
+    <h2>Delivery <span class="accent">Roadmap</span></h2>
+    <div class="divider"></div>
+    <div class="roadmap">
+      <div class="phase">
+        <div class="phase-dot"></div>
+        <div class="phase-card">
+          <div class="phase-num">Phase 1</div>
+          <div class="phase-title">Foundation</div>
+          <div class="phase-time">0 – 2 months</div>
+          <ul class="phase-items">
+            <li>Infrastructure provisioning (AWS/Azure)</li>
+            <li>CI/CD pipeline setup</li>
+            <li>Voice capture module (WebRTC)</li>
+            <li>STT integration (Whisper)</li>
+            <li>Basic FastAPI backend scaffold</li>
+          </ul>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="phase-dot"></div>
+        <div class="phase-card">
+          <div class="phase-num">Phase 2</div>
+          <div class="phase-title">Core AI</div>
+          <div class="phase-time">2 – 4 months</div>
+          <ul class="phase-items">
+            <li>LLM integration (GPT-4 / Claude)</li>
+            <li>NLU intent classification</li>
+            <li>TTS integration (ElevenLabs)</li>
+            <li>API Gateway configuration</li>
+            <li>Basic end-to-end pipeline live</li>
+          </ul>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="phase-dot"></div>
+        <div class="phase-card">
+          <div class="phase-num">Phase 3</div>
+          <div class="phase-title">Context Intelligence</div>
+          <div class="phase-time">4 – 6 months</div>
+          <ul class="phase-items">
+            <li>Redis session context layer</li>
+            <li>Vector DB + embedding pipeline</li>
+            <li>RAG-based context injection</li>
+            <li>User profile management</li>
+            <li>PII masking &amp; security hardening</li>
+          </ul>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="phase-dot"></div>
+        <div class="phase-card">
+          <div class="phase-num">Phase 4</div>
+          <div class="phase-title">Scale &amp; Optimise</div>
+          <div class="phase-time">6 – 9 months</div>
+          <ul class="phase-items">
+            <li>Auto-scaling &amp; load testing</li>
+            <li>Multi-language support</li>
+            <li>Analytics &amp; observability dashboard</li>
+            <li>A/B testing for voice personas</li>
+            <li>GA release &amp; hypercare</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════ SLIDE 12 ══ -->
+  <div class="slide" id="s12">
+    <div class="corner-accent"></div>
+    <div class="slide-label">Benefits &amp; ROI</div>
+    <h2>Business <span class="accent">Impact</span></h2>
+    <div class="divider"></div>
+    <div class="roi-grid">
+      <div class="roi-card">
+        <div class="roi-icon">🔁</div>
+        <div>
+          <h3>Eliminated Repetition</h3>
+          <p>Context retention means users never have to repeat information across turns or sessions.</p>
+          <div class="roi-metric">↓ 80% repetition</div>
+        </div>
+      </div>
+      <div class="roi-card">
+        <div class="roi-icon">😊</div>
+        <div>
+          <h3>User Satisfaction</h3>
+          <p>Personalized, natural interactions drive measurably higher CSAT and NPS scores.</p>
+          <div class="roi-metric">↑ 45% CSAT</div>
+        </div>
+      </div>
+      <div class="roi-card">
+        <div class="roi-icon">⏱️</div>
+        <div>
+          <h3>Faster Resolution</h3>
+          <p>Context-aware routing and pre-filled information reduces average handling time significantly.</p>
+          <div class="roi-metric">↓ 35% AHT</div>
+        </div>
+      </div>
+      <div class="roi-card">
+        <div class="roi-icon">💰</div>
+        <div>
+          <h3>Cost Reduction vs IVR</h3>
+          <p>Intelligent self-service deflects contacts from expensive human agent queues.</p>
+          <div class="roi-metric">↓ 60% IVR cost</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:20px;padding:16px 24px;background:rgba(0,229,160,0.06);border:1px solid rgba(0,229,160,0.2);border-radius:12px;text-align:center;max-width:840px;">
+      <span style="font-size:0.88rem;color:var(--muted);">Estimated ROI breakeven within </span>
+      <span style="font-family:'Syne',sans-serif;font-weight:700;color:var(--green);font-size:1rem;"> 12–18 months</span>
+      <span style="font-size:0.88rem;color:var(--muted);"> for enterprise deployments with 50k+ monthly voice interactions.</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════ SLIDE 13 ══ -->
+  <div class="slide" id="s13">
+    <div class="corner-accent"></div>
+    <div class="slide-label">Next Steps</div>
+    <h2>Recommended <span class="accent">Next Steps</span></h2>
+    <div class="divider"></div>
+    <div class="next-steps">
+      <div class="next-step">
+        <div class="step-circle">1</div>
+        <div class="body">
+          <h3>Stakeholder Alignment Workshop</h3>
+          <p>Convene product, engineering, and security leads to finalise scope, constraints, and success KPIs. Target: within 2 weeks.</p>
+        </div>
+      </div>
+      <div class="next-step">
+        <div class="step-circle">2</div>
+        <div class="body">
+          <h3>Proof of Concept (PoC) Build</h3>
+          <p>Stand up a minimal end-to-end pipeline (STT → LLM → TTS) to validate latency and accuracy targets. Target: 4-week sprint.</p>
+        </div>
+      </div>
+      <div class="next-step">
+        <div class="step-circle">3</div>
+        <div class="body">
+          <h3>Security &amp; Compliance Review</h3>
+          <p>Engage Information Security and Legal to assess GDPR, data residency, and vendor (OpenAI/Azure) data processing agreements.</p>
+        </div>
+      </div>
+      <div class="next-step">
+        <div class="step-circle">4</div>
+        <div class="body">
+          <h3>Formal Project Kick-off</h3>
+          <p>Assign squad, establish sprint cadence, set up infra environments (dev/staging/prod), and commence Phase 1 delivery.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════ SLIDE 14 ══ -->
+  <div class="slide" id="s14">
+    <div class="corner-accent"></div>
+    <div class="bottom-accent"></div>
+    <div style="position:relative;z-index:1;text-align:center;">
+      <div class="tag" style="margin-bottom:24px;">Context-Aware Voice Assistance · Solution Architecture</div>
+      <h1>Thank You</h1>
+      <div class="divider" style="margin:16px auto;"></div>
+      <p class="qa" style="font-size:1.15rem;">Questions &amp; Discussion</p>
+      <p style="margin-top:10px;font-size:0.88rem;max-width:500px;margin-left:auto;margin-right:auto;">
+        Slides and architecture diagrams available on request.<br/>
+        Follow-up discussions welcome at any time.
+      </p>
+      <div class="contact-strip">
+        <div class="contact-item">📧  solution.architect@company.com</div>
+        <div class="contact-item">📅  Schedule a follow-up</div>
+        <div class="contact-item">📄  Architecture Decision Records</div>
+      </div>
+    </div>
+    <!-- big decorative ring -->
+    <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.06;pointer-events:none;" viewBox="0 0 800 500">
+      <circle cx="400" cy="250" r="300" stroke="white" stroke-width="1" fill="none"/>
+      <circle cx="400" cy="250" r="200" stroke="white" stroke-width="1" fill="none"/>
+      <circle cx="400" cy="250" r="100" stroke="white" stroke-width="1" fill="none"/>
+    </svg>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- ── NAVIGATION ── -->
+<div id="nav">
+  <button class="nav-btn" id="prevBtn" onclick="go(-1)">&#8592;</button>
+  <span id="counter">1 / 14</span>
+  <button class="nav-btn" id="nextBtn" onclick="go(1)">&#8594;</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total  = slides.length;
+  let   cur    = 0;
+
+  function go(dir) {
+    const next = cur + dir;
+    if (next < 0 || next >= total) return;
+    slides[cur].classList.remove('active');
+    slides[cur].classList.add(dir < 0 ? 'exit-left' : 'exit-left');
+    setTimeout(() => slides[cur].classList.remove('exit-left'), 500);
+    cur = next;
+    slides[cur].classList.add('active');
+    document.getElementById('counter').textContent = (cur + 1) + ' / ' + total;
+    document.getElementById('progress').style.width = ((cur + 1) / total * 100) + '%';
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') go(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')  go(-1);
+  });
+
+  // initialise progress bar
+  document.getElementById('progress').style.width = (1 / total * 100) + '%';
+</script>
+</body>
+</html>
