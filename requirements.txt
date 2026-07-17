@@ -11,3 +11,6 @@ requests>=2.31.0
 
 # SDKs for Transcription
 openai>=1.0.0
+
+# Text to Speech
+gTTS>=2.3.0

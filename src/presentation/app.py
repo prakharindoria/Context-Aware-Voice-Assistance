@@ -1,6 +1,8 @@
 import streamlit as st
 import requests
 import os
+from gtts import gTTS
+import io
 
 # Configuration
 BACKEND_URL = os.getenv("WHISPER_SHIELD_BACKEND_URL", "http://localhost:8000")
@@ -68,6 +70,24 @@ if audio_file:
                         st.metric("Privacy Risk Score", f"{result['score']:.2f}")
                         st.subheader("Recommendation")
                         st.markdown(f"> {result['recommendation']}")
+
+                    # Generate Audio output
+                    summary_text = f"Transcript: {result['transcript']}. "
+                    if result["detected_entities"]:
+                        summary_text += "Detected Privacy Entities: "
+                        for entity in result["detected_entities"]:
+                            summary_text += f"{entity['text']} is a {entity['entity_type']} with risk {entity['risk_score']}. "
+                    else:
+                        summary_text += "No specific PII keywords detected. "
+                    summary_text += f"Privacy Assessment: Risk Level is {result['risk_level']}. "
+                    summary_text += f"Privacy Risk Score: {result['score']:.2f}. "
+                    summary_text += f"Recommendation: {result['recommendation']}"
+
+                    tts = gTTS(text=summary_text, lang='en', slow=False)
+                    audio_fp = io.BytesIO()
+                    tts.write_to_fp(audio_fp)
+                    audio_fp.seek(0)
+                    st.audio(audio_fp, format='audio/mp3', autoplay=True)
                 
                 else:
                     st.error(f"Backend error ({response.status_code}): {response.text}")
