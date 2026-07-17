@@ -1,0 +1,178 @@
+[
+  {
+    "id": 1,
+    "query": "My GPS is inaccurate indoors",
+    "intent": "indoor_location_issue",
+    "entities": {
+      "environment": "indoor"
+    },
+    "response": "GPS accuracy may be reduced indoors. Trying to improve location detection."
+  },
+  {
+    "id": 2,
+    "query": "Why can't GPS find me inside the building?",
+    "intent": "indoor_gps_issue",
+    "entities": {
+      "environment": "building"
+    },
+    "response": "GPS signals can be weaker inside buildings."
+  },
+  {
+    "id": 3,
+    "query": "My location is wrong inside my house",
+    "intent": "indoor_location_issue",
+    "entities": {
+      "environment": "home"
+    },
+    "response": "Checking indoor location accuracy."
+  },
+  {
+    "id": 4,
+    "query": "GPS doesn't work indoors",
+    "intent": "indoor_gps_issue",
+    "entities": {
+      "issue": "gps_unavailable"
+    },
+    "response": "GPS signals may be limited indoors."
+  },
+  {
+    "id": 5,
+    "query": "Improve my indoor location accuracy",
+    "intent": "improve_indoor_accuracy",
+    "entities": {
+      "environment": "indoor"
+    },
+    "response": "Improving indoor location accuracy using available signals."
+  },
+  {
+    "id": 6,
+    "query": "Find my location inside the mall",
+    "intent": "indoor_navigation",
+    "entities": {
+      "place_type": "mall"
+    },
+    "response": "Trying to locate you inside the mall."
+  },
+  {
+    "id": 7,
+    "query": "Navigate me inside the building",
+    "intent": "indoor_navigation",
+    "entities": {
+      "environment": "building"
+    },
+    "response": "Starting indoor navigation."
+  },
+  {
+    "id": 8,
+    "query": "My GPS signal is weak indoors",
+    "intent": "weak_indoor_signal",
+    "entities": {
+      "issue": "weak_signal"
+    },
+    "response": "Weak GPS signals are common indoors. Checking alternatives."
+  },
+  {
+    "id": 9,
+    "query": "Why does my location drift indoors?",
+    "intent": "indoor_location_drift",
+    "entities": {
+      "issue": "location_drift"
+    },
+    "response": "Checking indoor location drift."
+  },
+  {
+    "id": 10,
+    "query": "Use WiFi for indoor location",
+    "intent": "use_wifi_location",
+    "entities": {
+      "technology": "WiFi"
+    },
+    "response": "Using WiFi-based positioning for indoor location."
+  },
+  {
+    "id": 11,
+    "query": "Enable Bluetooth location tracking",
+    "intent": "enable_bluetooth_location",
+    "entities": {
+      "technology": "Bluetooth"
+    },
+    "response": "Bluetooth-based location tracking enabled."
+  },
+  {
+    "id": 12,
+    "query": "Find my location without GPS",
+    "intent": "alternative_location_method",
+    "entities": {},
+    "response": "Using alternative location methods."
+  },
+  {
+    "id": 13,
+    "query": "Indoor navigation is not accurate",
+    "intent": "indoor_navigation_issue",
+    "entities": {
+      "issue": "navigation_accuracy"
+    },
+    "response": "Checking indoor navigation accuracy."
+  },
+  {
+    "id": 14,
+    "query": "My position is not updating inside",
+    "intent": "indoor_location_update_issue",
+    "entities": {
+      "issue": "location_freeze"
+    },
+    "response": "Refreshing indoor location data."
+  },
+  {
+    "id": 15,
+    "query": "Can you locate me in this office?",
+    "intent": "indoor_location_request",
+    "entities": {
+      "place_type": "office"
+    },
+    "response": "Trying to determine your indoor location."
+  },
+  {
+    "id": 16,
+    "query": "GPS works outside but not inside",
+    "intent": "indoor_gps_comparison",
+    "entities": {
+      "environment": "indoor_vs_outdoor"
+    },
+    "response": "Indoor environments can block GPS signals."
+  },
+  {
+    "id": 17,
+    "query": "Locate me inside the airport",
+    "intent": "indoor_navigation",
+    "entities": {
+      "place_type": "airport"
+    },
+    "response": "Finding your location inside the airport."
+  },
+  {
+    "id": 18,
+    "query": "Why is indoor positioning slow?",
+    "intent": "indoor_positioning_delay",
+    "entities": {
+      "issue": "slow_detection"
+    },
+    "response": "Indoor positioning may take longer due to limited signals."
+  },
+  {
+    "id": 19,
+    "query": "Calibrate indoor location",
+    "intent": "indoor_location_calibration",
+    "entities": {},
+    "response": "Starting indoor location calibration."
+  },
+  {
+    "id": 20,
+    "query": "Switch to indoor mode",
+    "intent": "enable_indoor_mode",
+    "entities": {
+      "mode": "indoor"
+    },
+    "response": "Indoor location mode enabled."
+  }
+]
