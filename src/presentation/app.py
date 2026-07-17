@@ -1,11 +1,20 @@
 import streamlit as st
 import requests
 import os
-from gtts import gTTS
+import edge_tts
+import asyncio
 import io
 
 # Configuration
 BACKEND_URL = os.getenv("WHISPER_SHIELD_BACKEND_URL", "http://localhost:8000")
+
+async def _generate_edge_tts(text: str) -> bytes:
+    communicate = edge_tts.Communicate(text, "en-US-AriaNeural")
+    audio_fp = io.BytesIO()
+    async for chunk in communicate.stream():
+        if chunk["type"] == "audio":
+            audio_fp.write(chunk["data"])
+    return audio_fp.getvalue()
 API_TOKEN = os.getenv("WHISPER_SHIELD_API_TOKEN", "whisper-shield-dev-token-2026")
 
 st.set_page_config(page_title="WhisperShield AI", page_icon="🛡️", layout="wide")
@@ -83,12 +92,10 @@ if audio_file:
                     summary_text += f"Privacy Risk Score: {result['score']:.2f}. "
                     summary_text += f"Recommendation: {result['recommendation']}"
 
-                    tts = gTTS(text=summary_text, lang='en', slow=False)
-                    audio_fp = io.BytesIO()
-                    tts.write_to_fp(audio_fp)
+                    audio_bytes = asyncio.run(_generate_edge_tts(summary_text))
 
                     import base64
-                    b64 = base64.b64encode(audio_fp.getvalue()).decode()
+                    b64 = base64.b64encode(audio_bytes).decode()
                     md = f"""
                         <audio controls autoplay="true">
                         <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
