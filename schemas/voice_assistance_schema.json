@@ -1,0 +1,160 @@
+{
+  "schema_name": "voice_assistant_schema",
+  "version": "1.0",
+  "description": "JSON schema for voice assistant mock intent classification and response handling.",
+  "type": "object",
+  "properties": {
+    "dataset_name": {
+      "type": "string",
+      "description": "Name of the dataset."
+    },
+    "samples": {
+      "type": "array",
+      "description": "Collection of voice assistant training samples.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique sample identifier."
+          },
+          "category": {
+            "type": "string",
+            "description": "Feature category such as navigation, weather, reminders, or multimodal."
+          },
+          "query": {
+            "type": "string",
+            "description": "User voice input text."
+          },
+          "intent": {
+            "type": "string",
+            "description": "Detected user intent."
+          },
+          "entities": {
+            "type": "object",
+            "description": "Extracted parameters from the user query.",
+            "additionalProperties": true
+          },
+          "modality": {
+            "type": "string",
+            "enum": [
+              "audio",
+              "text",
+              "visual",
+              "multimodal"
+            ],
+            "description": "Input interaction mode."
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Intent prediction confidence score."
+          },
+          "response": {
+            "type": "string",
+            "description": "Assistant response text."
+          },
+          "action": {
+            "type": "object",
+            "description": "Optional executable assistant action.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "navigate",
+                  "search",
+                  "set_reminder",
+                  "play_media",
+                  "change_setting",
+                  "share_location",
+                  "get_weather",
+                  "get_time",
+                  "device_control"
+                ]
+              },
+              "parameters": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          },
+          "context": {
+            "type": "object",
+            "description": "Runtime context information.",
+            "properties": {
+              "location": {
+                "type": "object",
+                "properties": {
+                  "latitude": {
+                    "type": "number"
+                  },
+                  "longitude": {
+                    "type": "number"
+                  },
+                  "accuracy": {
+                    "type": "number"
+                  },
+                  "source": {
+                    "type": "string",
+                    "enum": [
+                      "gps",
+                      "wifi",
+                      "bluetooth",
+                      "network",
+                      "manual"
+                    ]
+                  }
+                }
+              },
+              "device": {
+                "type": "object",
+                "properties": {
+                  "platform": {
+                    "type": "string"
+                  },
+                  "battery_level": {
+                    "type": "integer"
+                  },
+                  "network_status": {
+                    "type": "string"
+                  }
+                }
+              },
+              "audio": {
+                "type": "object",
+                "properties": {
+                  "language": {
+                    "type": "string"
+                  },
+                  "accent": {
+                    "type": "string"
+                  },
+                  "noise_level": {
+                    "type": "string",
+                    "enum": [
+                      "low",
+                      "medium",
+                      "high"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "query",
+          "intent",
+          "entities",
+          "response"
+        ]
+      }
+    }
+  },
+  "required": [
+    "dataset_name",
+    "samples"
+  ]
+}
