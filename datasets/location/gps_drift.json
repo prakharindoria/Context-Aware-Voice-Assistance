@@ -1,0 +1,168 @@
+[
+  {
+    "id": 1,
+    "query": "My location seems wrong",
+    "intent": "gps_drift_detection",
+    "entities": {},
+    "response": "Checking your GPS accuracy."
+  },
+  {
+    "id": 2,
+    "query": "GPS is showing the wrong location",
+    "intent": "gps_drift_issue",
+    "entities": {
+      "issue": "incorrect_location"
+    },
+    "response": "I'll help correct your GPS location."
+  },
+  {
+    "id": 3,
+    "query": "Why is my location moving around?",
+    "intent": "gps_drift_detection",
+    "entities": {
+      "issue": "location_jump"
+    },
+    "response": "Checking for GPS signal drift."
+  },
+  {
+    "id": 4,
+    "query": "My GPS accuracy is poor",
+    "intent": "gps_accuracy_issue",
+    "entities": {
+      "issue": "low_accuracy"
+    },
+    "response": "Improving GPS accuracy."
+  },
+  {
+    "id": 5,
+    "query": "The map is showing me in the wrong place",
+    "intent": "gps_drift_issue",
+    "entities": {
+      "issue": "map_location_error"
+    },
+    "response": "Checking your GPS position and map location."
+  },
+  {
+    "id": 6,
+    "query": "Fix my GPS location",
+    "intent": "gps_recalibration",
+    "entities": {},
+    "response": "Recalibrating GPS location."
+  },
+  {
+    "id": 7,
+    "query": "My location keeps jumping",
+    "intent": "gps_drift_detection",
+    "entities": {
+      "issue": "unstable_location"
+    },
+    "response": "Detecting GPS instability."
+  },
+  {
+    "id": 8,
+    "query": "GPS signal is inaccurate",
+    "intent": "gps_signal_issue",
+    "entities": {
+      "issue": "signal_accuracy"
+    },
+    "response": "Checking GPS signal quality."
+  },
+  {
+    "id": 9,
+    "query": "Why does my GPS show me somewhere else?",
+    "intent": "gps_drift_issue",
+    "entities": {
+      "issue": "wrong_position"
+    },
+    "response": "Investigating the GPS position mismatch."
+  },
+  {
+    "id": 10,
+    "query": "Improve location accuracy",
+    "intent": "improve_gps_accuracy",
+    "entities": {},
+    "response": "Optimizing location accuracy."
+  },
+  {
+    "id": 11,
+    "query": "My navigation keeps changing routes",
+    "intent": "gps_drift_navigation",
+    "entities": {
+      "issue": "route_recalculation"
+    },
+    "response": "Checking GPS accuracy to improve navigation."
+  },
+  {
+    "id": 12,
+    "query": "GPS is not updating my location",
+    "intent": "gps_update_issue",
+    "entities": {
+      "issue": "location_freeze"
+    },
+    "response": "Refreshing your GPS location."
+  },
+  {
+    "id": 13,
+    "query": "My current location is inaccurate",
+    "intent": "gps_drift_issue",
+    "entities": {
+      "issue": "inaccurate_location"
+    },
+    "response": "Checking and correcting your current location."
+  },
+  {
+    "id": 14,
+    "query": "Why is my phone GPS drifting?",
+    "intent": "gps_drift_detection",
+    "entities": {
+      "device": "phone"
+    },
+    "response": "Checking possible GPS drift causes."
+  },
+  {
+    "id": 15,
+    "query": "Reset GPS tracking",
+    "intent": "reset_gps",
+    "entities": {},
+    "response": "Resetting GPS tracking."
+  },
+  {
+    "id": 16,
+    "query": "Calibrate my location",
+    "intent": "gps_calibration",
+    "entities": {},
+    "response": "Starting GPS calibration."
+  },
+  {
+    "id": 17,
+    "query": "My GPS accuracy is only a few meters off",
+    "intent": "gps_accuracy_issue",
+    "entities": {
+      "issue": "minor_drift"
+    },
+    "response": "Adjusting GPS accuracy settings."
+  },
+  {
+    "id": 18,
+    "query": "Location services are inaccurate",
+    "intent": "location_service_issue",
+    "entities": {},
+    "response": "Checking location service settings."
+  },
+  {
+    "id": 19,
+    "query": "Enable high accuracy GPS",
+    "intent": "enable_high_accuracy_location",
+    "entities": {
+      "mode": "high_accuracy"
+    },
+    "response": "High accuracy location mode enabled."
+  },
+  {
+    "id": 20,
+    "query": "Check my GPS status",
+    "intent": "gps_status_check",
+    "entities": {},
+    "response": "Checking GPS status and signal strength."
+  }
+]
