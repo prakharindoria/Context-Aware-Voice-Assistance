@@ -86,8 +86,15 @@ if audio_file:
                     tts = gTTS(text=summary_text, lang='en', slow=False)
                     audio_fp = io.BytesIO()
                     tts.write_to_fp(audio_fp)
-                    audio_fp.seek(0)
-                    st.audio(audio_fp, format='audio/mp3', autoplay=True)
+
+                    import base64
+                    b64 = base64.b64encode(audio_fp.getvalue()).decode()
+                    md = f"""
+                        <audio controls autoplay="true">
+                        <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+                        </audio>
+                        """
+                    st.markdown(md, unsafe_allow_html=True)
                 
                 else:
                     st.error(f"Backend error ({response.status_code}): {response.text}")
