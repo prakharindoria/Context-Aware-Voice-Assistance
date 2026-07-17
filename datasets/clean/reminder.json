@@ -1,0 +1,189 @@
+[
+  {
+    "id": 1,
+    "query": "Remind me to drink water at 5 PM",
+    "intent": "set_reminder",
+    "entities": {
+      "task": "drink water",
+      "time": "5:00 PM"
+    },
+    "response": "Reminder set to drink water at 5:00 PM."
+  },
+  {
+    "id": 2,
+    "query": "Remind me to call Mom tomorrow morning",
+    "intent": "set_reminder",
+    "entities": {
+      "task": "call Mom",
+      "date": "tomorrow",
+      "time": "morning"
+    },
+    "response": "Reminder set to call Mom tomorrow morning."
+  },
+  {
+    "id": 3,
+    "query": "Set a reminder for my doctor's appointment on Friday",
+    "intent": "set_reminder",
+    "entities": {
+      "task": "doctor's appointment",
+      "date": "Friday"
+    },
+    "response": "Reminder set for your doctor's appointment on Friday."
+  },
+  {
+    "id": 4,
+    "query": "Remind me to submit my assignment at 8 PM",
+    "intent": "set_reminder",
+    "entities": {
+      "task": "submit assignment",
+      "time": "8:00 PM"
+    },
+    "response": "Reminder set for 8:00 PM."
+  },
+  {
+    "id": 5,
+    "query": "Create a reminder to pay the electricity bill tomorrow",
+    "intent": "set_reminder",
+    "entities": {
+      "task": "pay electricity bill",
+      "date": "tomorrow"
+    },
+    "response": "Reminder created for tomorrow."
+  },
+  {
+    "id": 6,
+    "query": "Show my reminders",
+    "intent": "list_reminders",
+    "entities": {},
+    "response": "Here are your current reminders."
+  },
+  {
+    "id": 7,
+    "query": "What reminders do I have today?",
+    "intent": "list_reminders",
+    "entities": {
+      "date": "today"
+    },
+    "response": "Here are your reminders for today."
+  },
+  {
+    "id": 8,
+    "query": "Delete my reminder to drink water",
+    "intent": "delete_reminder",
+    "entities": {
+      "task": "drink water"
+    },
+    "response": "Your reminder has been deleted."
+  },
+  {
+    "id": 9,
+    "query": "Cancel my meeting reminder",
+    "intent": "delete_reminder",
+    "entities": {
+      "task": "meeting"
+    },
+    "response": "Meeting reminder canceled."
+  },
+  {
+    "id": 10,
+    "query": "Update my gym reminder to 7 PM",
+    "intent": "update_reminder",
+    "entities": {
+      "task": "gym",
+      "time": "7:00 PM"
+    },
+    "response": "Your gym reminder has been updated to 7:00 PM."
+  },
+  {
+    "id": 11,
+    "query": "Remind me every day at 9 AM to take my medicine",
+    "intent": "set_recurring_reminder",
+    "entities": {
+      "task": "take medicine",
+      "frequency": "daily",
+      "time": "9:00 AM"
+    },
+    "response": "Daily reminder set for 9:00 AM."
+  },
+  {
+    "id": 12,
+    "query": "Remind me every Monday to attend the team meeting",
+    "intent": "set_recurring_reminder",
+    "entities": {
+      "task": "team meeting",
+      "frequency": "weekly",
+      "day": "Monday"
+    },
+    "response": "Weekly reminder set for every Monday."
+  },
+  {
+    "id": 13,
+    "query": "Remind me to buy groceries this evening",
+    "intent": "set_reminder",
+    "entities": {
+      "task": "buy groceries",
+      "time": "evening"
+    },
+    "response": "Reminder set for this evening."
+  },
+  {
+    "id": 14,
+    "query": "Remind me in 30 minutes to check the oven",
+    "intent": "set_reminder",
+    "entities": {
+      "task": "check the oven",
+      "time_offset": "30 minutes"
+    },
+    "response": "Reminder set for 30 minutes from now."
+  },
+  {
+    "id": 15,
+    "query": "Remind me in one hour to join the meeting",
+    "intent": "set_reminder",
+    "entities": {
+      "task": "join meeting",
+      "time_offset": "1 hour"
+    },
+    "response": "Reminder set for one hour from now."
+  },
+  {
+    "id": 16,
+    "query": "Snooze my reminder for 10 minutes",
+    "intent": "snooze_reminder",
+    "entities": {
+      "duration": "10 minutes"
+    },
+    "response": "Reminder snoozed for 10 minutes."
+  },
+  {
+    "id": 17,
+    "query": "Mark my reminder as completed",
+    "intent": "complete_reminder",
+    "entities": {},
+    "response": "Reminder marked as completed."
+  },
+  {
+    "id": 18,
+    "query": "Clear all reminders",
+    "intent": "clear_reminders",
+    "entities": {},
+    "response": "All reminders have been removed."
+  },
+  {
+    "id": 19,
+    "query": "Remind me to wish Sarah a happy birthday on July 20",
+    "intent": "set_reminder",
+    "entities": {
+      "task": "wish Sarah a happy birthday",
+      "date": "July 20"
+    },
+    "response": "Birthday reminder set for July 20."
+  },
+  {
+    "id": 20,
+    "query": "When is my next reminder?",
+    "intent": "next_reminder",
+    "entities": {},
+    "response": "Here is your next scheduled reminder."
+  }
+]
