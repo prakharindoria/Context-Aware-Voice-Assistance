@@ -1,0 +1,195 @@
+[
+  {
+    "id": 1,
+    "query": "What's the weather in my location?",
+    "intent": "weather_location_query",
+    "entities": {
+      "modality": "multimodal",
+      "location_source": "current_location"
+    },
+    "response": "Fetching weather information for your current location."
+  },
+  {
+    "id": 2,
+    "query": "Tell me the weather where I am",
+    "intent": "weather_current_location",
+    "entities": {
+      "input_mode": "voice",
+      "location": "current"
+    },
+    "response": "Checking the current weather at your location."
+  },
+  {
+    "id": 3,
+    "query": "What is the temperature here?",
+    "intent": "temperature_location_query",
+    "entities": {
+      "location": "current",
+      "modality": "multimodal"
+    },
+    "response": "Getting the current temperature for your location."
+  },
+  {
+    "id": 4,
+    "query": "Will it rain where I am?",
+    "intent": "rain_forecast_location",
+    "entities": {
+      "location": "current"
+    },
+    "response": "Checking rain forecast for your current location."
+  },
+  {
+    "id": 5,
+    "query": "Give me weather details using my location",
+    "intent": "weather_location_query",
+    "entities": {
+      "location_source": "gps"
+    },
+    "response": "Using your location to provide weather details."
+  },
+  {
+    "id": 6,
+    "query": "What is the weather in New York?",
+    "intent": "weather_by_city",
+    "entities": {
+      "location": "New York"
+    },
+    "response": "Fetching weather information for New York."
+  },
+  {
+    "id": 7,
+    "query": "Check weather at my destination",
+    "intent": "destination_weather_query",
+    "entities": {
+      "location_source": "navigation_destination"
+    },
+    "response": "Checking weather at your destination."
+  },
+  {
+    "id": 8,
+    "query": "Will it rain at my destination?",
+    "intent": "destination_rain_forecast",
+    "entities": {
+      "weather_type": "rain",
+      "location_source": "destination"
+    },
+    "response": "Checking rain forecast for your destination."
+  },
+  {
+    "id": 9,
+    "query": "Compare weather between here and home",
+    "intent": "weather_comparison",
+    "entities": {
+      "locations": [
+        "current_location",
+        "home"
+      ]
+    },
+    "response": "Comparing weather conditions between both locations."
+  },
+  {
+    "id": 10,
+    "query": "Show weather on the map",
+    "intent": "weather_map_view",
+    "entities": {
+      "modality": "visual",
+      "feature": "map"
+    },
+    "response": "Showing weather information on the map."
+  },
+  {
+    "id": 11,
+    "query": "Read today's weather for my location",
+    "intent": "audio_weather_summary",
+    "entities": {
+      "output_mode": "speech",
+      "location": "current"
+    },
+    "response": "Reading today's weather summary for your location."
+  },
+  {
+    "id": 12,
+    "query": "Describe the weather around me",
+    "intent": "environment_weather_detection",
+    "entities": {
+      "modality": "multimodal",
+      "location": "nearby"
+    },
+    "response": "Analyzing weather conditions around you."
+  },
+  {
+    "id": 13,
+    "query": "Is it sunny where I am?",
+    "intent": "weather_condition_location",
+    "entities": {
+      "condition": "sunny",
+      "location": "current"
+    },
+    "response": "Checking sunlight conditions at your location."
+  },
+  {
+    "id": 14,
+    "query": "How humid is it here?",
+    "intent": "humidity_location_query",
+    "entities": {
+      "location": "current"
+    },
+    "response": "Checking humidity at your current location."
+  },
+  {
+    "id": 15,
+    "query": "What is the wind speed near me?",
+    "intent": "wind_location_query",
+    "entities": {
+      "location": "current"
+    },
+    "response": "Fetching wind speed information for your location."
+  },
+  {
+    "id": 16,
+    "query": "Check weather before I travel",
+    "intent": "travel_weather_check",
+    "entities": {
+      "purpose": "travel"
+    },
+    "response": "Checking weather conditions for your travel route."
+  },
+  {
+    "id": 17,
+    "query": "Will the weather affect my route?",
+    "intent": "route_weather_analysis",
+    "entities": {
+      "feature": "navigation_weather"
+    },
+    "response": "Analyzing weather conditions along your route."
+  },
+  {
+    "id": 18,
+    "query": "Show weather alerts for my area",
+    "intent": "weather_alert_location",
+    "entities": {
+      "location": "current"
+    },
+    "response": "Checking weather alerts for your area."
+  },
+  {
+    "id": 19,
+    "query": "Use my GPS to check weather",
+    "intent": "gps_weather_query",
+    "entities": {
+      "sensor": "GPS",
+      "modality": "multimodal"
+    },
+    "response": "Using GPS location to fetch weather information."
+  },
+  {
+    "id": 20,
+    "query": "Tell me if I need an umbrella here",
+    "intent": "weather_based_recommendation",
+    "entities": {
+      "recommendation": "umbrella",
+      "location": "current"
+    },
+    "response": "Checking weather conditions to recommend whether you need an umbrella."
+  }
+]
