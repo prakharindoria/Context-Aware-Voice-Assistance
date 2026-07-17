@@ -1,0 +1,159 @@
+[
+  {
+    "id": 1,
+    "query": "Hello",
+    "intent": "greeting",
+    "entities": {},
+    "response": "Hello! How can I help you today?"
+  },
+  {
+    "id": 2,
+    "query": "Hi",
+    "intent": "greeting",
+    "entities": {},
+    "response": "Hi there! What can I do for you?"
+  },
+  {
+    "id": 3,
+    "query": "What time is it?",
+    "intent": "get_time",
+    "entities": {},
+    "response": "The current time is {current_time}."
+  },
+  {
+    "id": 4,
+    "query": "What's today's date?",
+    "intent": "get_date",
+    "entities": {},
+    "response": "Today is {current_date}."
+  },
+  {
+    "id": 5,
+    "query": "What's the weather today?",
+    "intent": "weather",
+    "entities": {
+      "date": "today"
+    },
+    "response": "Fetching today's weather."
+  },
+  {
+    "id": 6,
+    "query": "Set an alarm for 7 AM",
+    "intent": "set_alarm",
+    "entities": {
+      "time": "7:00 AM"
+    },
+    "response": "Alarm set for 7:00 AM."
+  },
+  {
+    "id": 7,
+    "query": "Remind me to drink water at 5 PM",
+    "intent": "set_reminder",
+    "entities": {
+      "task": "drink water",
+      "time": "5:00 PM"
+    },
+    "response": "Reminder set."
+  },
+  {
+    "id": 8,
+    "query": "Play some music",
+    "intent": "play_music",
+    "entities": {},
+    "response": "Playing your music."
+  },
+  {
+    "id": 9,
+    "query": "Pause the music",
+    "intent": "pause_music",
+    "entities": {},
+    "response": "Music paused."
+  },
+  {
+    "id": 10,
+    "query": "Increase the volume",
+    "intent": "volume_up",
+    "entities": {},
+    "response": "Volume increased."
+  },
+  {
+    "id": 11,
+    "query": "Lower the volume",
+    "intent": "volume_down",
+    "entities": {},
+    "response": "Volume decreased."
+  },
+  {
+    "id": 12,
+    "query": "Turn on Bluetooth",
+    "intent": "bluetooth_on",
+    "entities": {},
+    "response": "Bluetooth enabled."
+  },
+  {
+    "id": 13,
+    "query": "Turn off Wi-Fi",
+    "intent": "wifi_off",
+    "entities": {},
+    "response": "Wi-Fi disabled."
+  },
+  {
+    "id": 14,
+    "query": "Open YouTube",
+    "intent": "open_app",
+    "entities": {
+      "app": "YouTube"
+    },
+    "response": "Opening YouTube."
+  },
+  {
+    "id": 15,
+    "query": "Open Chrome",
+    "intent": "open_app",
+    "entities": {
+      "app": "Chrome"
+    },
+    "response": "Opening Chrome."
+  },
+  {
+    "id": 16,
+    "query": "Call Mom",
+    "intent": "make_call",
+    "entities": {
+      "contact": "Mom"
+    },
+    "response": "Calling Mom."
+  },
+  {
+    "id": 17,
+    "query": "Send a message to John",
+    "intent": "send_message",
+    "entities": {
+      "contact": "John"
+    },
+    "response": "What would you like to say?"
+  },
+  {
+    "id": 18,
+    "query": "Navigate to the airport",
+    "intent": "navigation",
+    "entities": {
+      "destination": "Airport"
+    },
+    "response": "Starting navigation."
+  },
+  {
+    "id": 19,
+    "query": "What's my battery percentage?",
+    "intent": "battery_status",
+    "entities": {},
+    "response": "Your battery is at {battery_level}%."
+  },
+  {
+    "id": 20,
+    "query": "Goodbye",
+    "intent": "goodbye",
+    "entities": {},
+    "response": "Goodbye! Have a great day."
+  }
+]
