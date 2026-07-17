@@ -1,0 +1,177 @@
+[
+  {
+    "id": 1,
+    "query": "Create a geofence around my home",
+    "intent": "create_geofence",
+    "entities": {
+      "location": "home"
+    },
+    "response": "Geofence created around your home."
+  },
+  {
+    "id": 2,
+    "query": "Set a location alert for my office",
+    "intent": "create_geofence",
+    "entities": {
+      "location": "office"
+    },
+    "response": "Location alert set for your office."
+  },
+  {
+    "id": 3,
+    "query": "Notify me when I leave home",
+    "intent": "geofence_exit_alert",
+    "entities": {
+      "location": "home",
+      "event": "exit"
+    },
+    "response": "I'll notify you when you leave home."
+  },
+  {
+    "id": 4,
+    "query": "Alert me when I arrive at work",
+    "intent": "geofence_entry_alert",
+    "entities": {
+      "location": "work",
+      "event": "entry"
+    },
+    "response": "I'll notify you when you arrive at work."
+  },
+  {
+    "id": 5,
+    "query": "Create a reminder when I reach the grocery store",
+    "intent": "location_based_reminder",
+    "entities": {
+      "location": "grocery store"
+    },
+    "response": "Location-based reminder created."
+  },
+  {
+    "id": 6,
+    "query": "Remove my home geofence",
+    "intent": "delete_geofence",
+    "entities": {
+      "location": "home"
+    },
+    "response": "Home geofence removed."
+  },
+  {
+    "id": 7,
+    "query": "Delete all location alerts",
+    "intent": "clear_geofences",
+    "entities": {},
+    "response": "All geofences have been removed."
+  },
+  {
+    "id": 8,
+    "query": "Show my active geofences",
+    "intent": "list_geofences",
+    "entities": {},
+    "response": "Showing your active geofences."
+  },
+  {
+    "id": 9,
+    "query": "What geofences are enabled?",
+    "intent": "list_geofences",
+    "entities": {},
+    "response": "Here are your enabled geofences."
+  },
+  {
+    "id": 10,
+    "query": "Turn on location alerts",
+    "intent": "enable_geofence",
+    "entities": {},
+    "response": "Location alerts enabled."
+  },
+  {
+    "id": 11,
+    "query": "Turn off location alerts",
+    "intent": "disable_geofence",
+    "entities": {},
+    "response": "Location alerts disabled."
+  },
+  {
+    "id": 12,
+    "query": "Change my office geofence radius",
+    "intent": "update_geofence",
+    "entities": {
+      "location": "office"
+    },
+    "response": "Office geofence settings updated."
+  },
+  {
+    "id": 13,
+    "query": "Set a 500 meter radius around my house",
+    "intent": "create_geofence",
+    "entities": {
+      "location": "house",
+      "radius": "500 meters"
+    },
+    "response": "Geofence created with a 500 meter radius."
+  },
+  {
+    "id": 14,
+    "query": "Notify me when someone enters this area",
+    "intent": "geofence_entry_alert",
+    "entities": {
+      "event": "entry"
+    },
+    "response": "Entry notification enabled for this area."
+  },
+  {
+    "id": 15,
+    "query": "Notify me when someone leaves this area",
+    "intent": "geofence_exit_alert",
+    "entities": {
+      "event": "exit"
+    },
+    "response": "Exit notification enabled for this area."
+  },
+  {
+    "id": 16,
+    "query": "Create a safety zone around school",
+    "intent": "create_geofence",
+    "entities": {
+      "location": "school",
+      "purpose": "safety_zone"
+    },
+    "response": "Safety zone created around school."
+  },
+  {
+    "id": 17,
+    "query": "Did I enter the shopping mall area?",
+    "intent": "geofence_status_check",
+    "entities": {
+      "location": "shopping mall"
+    },
+    "response": "Checking your geofence status."
+  },
+  {
+    "id": 18,
+    "query": "Am I inside my home zone?",
+    "intent": "geofence_status_check",
+    "entities": {
+      "location": "home"
+    },
+    "response": "Checking whether you are inside the home zone."
+  },
+  {
+    "id": 19,
+    "query": "Create a geofence for my pet's location",
+    "intent": "create_geofence",
+    "entities": {
+      "purpose": "pet_tracking"
+    },
+    "response": "Pet tracking geofence created."
+  },
+  {
+    "id": 20,
+    "query": "Send an alert when I reach the airport",
+    "intent": "location_based_alert",
+    "entities": {
+      "location": "airport",
+      "event": "arrival"
+    },
+    "response": "Arrival alert set for the airport."
+  }
+]
