@@ -14,3 +14,23 @@ openai>=1.0.0
 
 # Text to Speech
 gTTS>=2.3.0
+
+
+streamlit
+pdfminer.six
+langchain
+langchain-openai
+langchain-community
+chromadb
+openai
+httpx
+tiktoken
+# streamlit>=1.35.0
+openai-whisper
+torch
+ffmpeg-python
+numpy
+streamlit-webrtc
+soundfile
+av
+python-dotenv
