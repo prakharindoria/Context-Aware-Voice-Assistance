@@ -1,0 +1,191 @@
+[
+  {
+    "id": 1,
+    "query": "Where am I?",
+    "intent": "audio_location_query",
+    "entities": {
+      "modality": "audio",
+      "location_request": "current_location"
+    },
+    "response": "I'll determine your current location."
+  },
+  {
+    "id": 2,
+    "query": "Tell me my current location using voice",
+    "intent": "audio_location_query",
+    "entities": {
+      "modality": "audio",
+      "request_type": "location"
+    },
+    "response": "Your current location is being identified."
+  },
+  {
+    "id": 3,
+    "query": "Can you locate me?",
+    "intent": "location_detection",
+    "entities": {
+      "input_mode": "voice"
+    },
+    "response": "Checking your current position."
+  },
+  {
+    "id": 4,
+    "query": "Where is my phone right now?",
+    "intent": "device_location_query",
+    "entities": {
+      "device": "phone",
+      "modality": "audio"
+    },
+    "response": "Finding your phone location."
+  },
+  {
+    "id": 5,
+    "query": "Share my current location",
+    "intent": "share_location",
+    "entities": {
+      "action": "share",
+      "modality": "voice"
+    },
+    "response": "Preparing your current location to share."
+  },
+  {
+    "id": 6,
+    "query": "Send my location to John",
+    "intent": "share_location",
+    "entities": {
+      "recipient": "John"
+    },
+    "response": "Sharing your location with John."
+  },
+  {
+    "id": 7,
+    "query": "Navigate from my current location",
+    "intent": "navigation_from_current_location",
+    "entities": {
+      "source": "current_location",
+      "modality": "audio"
+    },
+    "response": "Using your current location as the starting point."
+  },
+  {
+    "id": 8,
+    "query": "What places are near me?",
+    "intent": "nearby_places_query",
+    "entities": {
+      "reference": "current_location"
+    },
+    "response": "Finding nearby places."
+  },
+  {
+    "id": 9,
+    "query": "Find restaurants around my location",
+    "intent": "nearby_places_query",
+    "entities": {
+      "place_type": "restaurant",
+      "modality": "audio"
+    },
+    "response": "Searching for nearby restaurants."
+  },
+  {
+    "id": 10,
+    "query": "Are there hospitals nearby?",
+    "intent": "nearby_places_query",
+    "entities": {
+      "place_type": "hospital"
+    },
+    "response": "Finding nearby hospitals."
+  },
+  {
+    "id": 11,
+    "query": "What direction am I facing?",
+    "intent": "orientation_query",
+    "entities": {
+      "sensor": "compass",
+      "modality": "audio"
+    },
+    "response": "Checking your current direction."
+  },
+  {
+    "id": 12,
+    "query": "How far am I from home?",
+    "intent": "distance_from_location",
+    "entities": {
+      "destination": "home"
+    },
+    "response": "Calculating distance from your current location."
+  },
+  {
+    "id": 13,
+    "query": "What is my exact GPS location?",
+    "intent": "gps_coordinate_query",
+    "entities": {
+      "output": "coordinates"
+    },
+    "response": "Fetching your GPS coordinates."
+  },
+  {
+    "id": 14,
+    "query": "Read my location aloud",
+    "intent": "audio_location_output",
+    "entities": {
+      "output_mode": "speech"
+    },
+    "response": "Reading your current location aloud."
+  },
+  {
+    "id": 15,
+    "query": "Describe my surroundings",
+    "intent": "location_context_detection",
+    "entities": {
+      "modality": "audio",
+      "feature": "environment"
+    },
+    "response": "Analyzing your surrounding location."
+  },
+  {
+    "id": 16,
+    "query": "Am I near the airport?",
+    "intent": "location_proximity_check",
+    "entities": {
+      "destination": "airport"
+    },
+    "response": "Checking your distance from the airport."
+  },
+  {
+    "id": 17,
+    "query": "Find my parked car location",
+    "intent": "saved_location_query",
+    "entities": {
+      "location_type": "vehicle"
+    },
+    "response": "Finding your parked car location."
+  },
+  {
+    "id": 18,
+    "query": "Save my current location",
+    "intent": "save_location",
+    "entities": {
+      "action": "save"
+    },
+    "response": "Your current location has been saved."
+  },
+  {
+    "id": 19,
+    "query": "Remind me where I parked",
+    "intent": "saved_location_query",
+    "entities": {
+      "location_type": "parking"
+    },
+    "response": "Finding your saved parking location."
+  },
+  {
+    "id": 20,
+    "query": "Use voice to find my location",
+    "intent": "audio_location_query",
+    "entities": {
+      "modality": "speech",
+      "feature": "location_detection"
+    },
+    "response": "Using voice assistance to find your location."
+  }
+]
