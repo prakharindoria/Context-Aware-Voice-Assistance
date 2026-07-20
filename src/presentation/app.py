@@ -1,8 +1,18 @@
 import streamlit as st
 import requests
 import os
-from gtts import gTTS
+import edge_tts
+import asyncio
 import io
+
+async def get_audio_bytes(text):
+    communicate = edge_tts.Communicate(text, "en-US-AriaNeural")
+    audio_data = b""
+    async for chunk in communicate.stream():
+        if chunk["type"] == "audio":
+            audio_data += chunk["data"]
+    return audio_data
+
 
 # Configuration
 BACKEND_URL = os.getenv("WHISPER_SHIELD_BACKEND_URL", "http://localhost:8000")
@@ -83,10 +93,8 @@ if audio_file:
                     summary_text += f"Privacy Risk Score: {result['score']:.2f}. "
                     summary_text += f"Recommendation: {result['recommendation']}"
 
-                    tts = gTTS(text=summary_text, lang='en', slow=False)
-                    audio_fp = io.BytesIO()
-                    tts.write_to_fp(audio_fp)
-                    audio_fp.seek(0)
+                    audio_bytes = asyncio.run(get_audio_bytes(summary_text))
+                    audio_fp = io.BytesIO(audio_bytes)
                     st.audio(audio_fp, format='audio/mp3', autoplay=True)
                 
                 else:
