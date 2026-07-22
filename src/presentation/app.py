@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 import os
-from gtts import gTTS
+import edge_tts
 import io
 
 # Configuration
@@ -83,9 +83,13 @@ if audio_file:
                     summary_text += f"Privacy Risk Score: {result['score']:.2f}. "
                     summary_text += f"Recommendation: {result['recommendation']}"
 
-                    tts = gTTS(text=summary_text, lang='en', slow=False)
+                    communicate = edge_tts.Communicate(summary_text, "en-US-AriaNeural")
                     audio_fp = io.BytesIO()
-                    tts.write_to_fp(audio_fp)
+                    # Note: Streamlit's st.audio does not support true real-time streaming
+                    # chunk by chunk. We must buffer the entire audio in memory first.
+                    for chunk in communicate.stream_sync():
+                        if chunk["type"] == "audio":
+                            audio_fp.write(chunk["data"])
                     audio_fp.seek(0)
                     st.audio(audio_fp, format='audio/mp3', autoplay=True)
                 
