@@ -1,7 +1,8 @@
 import streamlit as st
 import requests
 import os
-from gtts import gTTS
+import edge_tts
+import asyncio
 import io
 
 # Configuration
@@ -83,10 +84,16 @@ if audio_file:
                     summary_text += f"Privacy Risk Score: {result['score']:.2f}. "
                     summary_text += f"Recommendation: {result['recommendation']}"
 
-                    tts = gTTS(text=summary_text, lang='en', slow=False)
-                    audio_fp = io.BytesIO()
-                    tts.write_to_fp(audio_fp)
-                    audio_fp.seek(0)
+                    async def generate_audio(text):
+                        communicate = edge_tts.Communicate(text, "en-US-AriaNeural")
+                        audio_data = b""
+                        async for chunk in communicate.stream():
+                            if chunk["type"] == "audio":
+                                audio_data += chunk["data"]
+                        return audio_data
+
+                    audio_bytes = asyncio.run(generate_audio(summary_text))
+                    audio_fp = io.BytesIO(audio_bytes)
                     st.audio(audio_fp, format='audio/mp3', autoplay=True)
                 
                 else:
